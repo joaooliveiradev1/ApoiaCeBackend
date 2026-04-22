@@ -1,8 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.models.Dto.LoginRequestDTO;
-import com.example.demo.models.Dto.LoginResponseDTO;
-import com.example.demo.models.Dto.UsuarioCreateRequest;
+import com.example.demo.models.Dto.*;
 import com.example.demo.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -36,8 +34,24 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@Valid @RequestBody UsuarioCreateRequest request) {
-        authService.registro(request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<LoginResponseDTO> register(@Valid @RequestBody UsuarioCreateRequest request) {
+        LoginResponseDTO response = authService.registro(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequestDTO dto) {
+
+        String token = authService.forgotPassword(dto);
+        return ResponseEntity.ok("Token gerado (dev): " + token);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(
+            @Valid @RequestBody ResetPasswordRequestDTO dto) {
+
+        authService.resetPassword(dto);
+        return ResponseEntity.noContent().build();
     }
 }

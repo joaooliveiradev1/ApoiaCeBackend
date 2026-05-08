@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "usuarios")
@@ -23,9 +24,8 @@ import java.util.List;
 public class Usuario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false)
-    private Long id;
+    @Column(name = "id", length = 36, nullable = false, updatable = false)
+    private String id = UUID.randomUUID().toString();
 
     @Column(name = "nome", nullable = false, length = 120)
     @NotBlank(message = "Nome é obrigatório")

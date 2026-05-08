@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "categorias")
@@ -18,9 +19,8 @@ import java.time.OffsetDateTime;
 public class Categoria {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false)
-    private Long id;
+    @Column(length = 36)
+    private String id = UUID.randomUUID().toString();
 
     @NotBlank(message = "Nome é obrigatório")
     @Size(max = 80, message = "Nome deve ter no máximo 80 caracteres")

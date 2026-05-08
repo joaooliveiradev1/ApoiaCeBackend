@@ -29,7 +29,7 @@ public class PerfilUsuarioController {
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody PerfilUsuarioRequestDTO dto) {
 
-        Long usuarioId = extrairId(userDetails);
+        String usuarioId = extrairId(userDetails);
         PerfilUsuarioResponseDTO response = perfilService.criar(usuarioId, dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -38,7 +38,7 @@ public class PerfilUsuarioController {
     public ResponseEntity<PerfilUsuarioResponseDTO> buscar(
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Long usuarioId = extrairId(userDetails);
+        String usuarioId = extrairId(userDetails);
         return ResponseEntity.ok(perfilService.buscarPorUsuarioId(usuarioId));
     }
 
@@ -47,7 +47,7 @@ public class PerfilUsuarioController {
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody PerfilUsuarioRequestDTO dto) {
 
-        Long usuarioId = extrairId(userDetails);
+        String usuarioId = extrairId(userDetails);
         return ResponseEntity.ok(perfilService.atualizar(usuarioId, dto));
     }
 
@@ -55,13 +55,13 @@ public class PerfilUsuarioController {
     public ResponseEntity<Void> deletar(
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Long usuarioId = extrairId(userDetails);
+        String usuarioId = extrairId(userDetails);
         perfilService.deletar(usuarioId);
         return ResponseEntity.noContent().build();
     }
 
 
-    private Long extrairId(UserDetails userDetails) {
+    private String extrairId(UserDetails userDetails) {
         return usuarioRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.UNAUTHORIZED, "Usuário autenticado não encontrado"))

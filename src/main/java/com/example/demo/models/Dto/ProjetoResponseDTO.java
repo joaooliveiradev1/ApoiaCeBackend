@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ProjetoResponseDTO {
 
-    private Long id;
+    private String id;
     private String titulo;
     private String slug;
     private String descricao;
@@ -33,10 +33,10 @@ public class ProjetoResponseDTO {
     private TipoAssinatura tipoAssinatura;
     private StatusProjeto status;
 
-    private Long criadorId;
+    private String criadorId;
     private String criadorNome;
 
-    private Long categoriaId;
+    private String categoriaId;
     private String categoriaNome;
 
     private LocalDateTime criadoEm;

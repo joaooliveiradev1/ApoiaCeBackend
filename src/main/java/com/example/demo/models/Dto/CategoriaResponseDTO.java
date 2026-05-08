@@ -10,7 +10,7 @@ import java.time.OffsetDateTime;
 @Setter
 public class CategoriaResponseDTO {
 
-    private Long id;
+    private String id;
     private String nome;
     private String cor;
     private OffsetDateTime criadoEm;

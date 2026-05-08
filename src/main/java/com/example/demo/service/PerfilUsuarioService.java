@@ -27,7 +27,7 @@ public class PerfilUsuarioService {
     }
 
 
-    public PerfilUsuarioResponseDTO criar(Long usuarioId, PerfilUsuarioRequestDTO dto) {
+    public PerfilUsuarioResponseDTO criar(String usuarioId, PerfilUsuarioRequestDTO dto) {
         if (perfilRepository.existsByUsuarioIdAndDeletedAtIsNull(usuarioId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Usuário já possui um perfil ativo");
@@ -48,7 +48,7 @@ public class PerfilUsuarioService {
 
 
     @Transactional(readOnly = true)
-    public PerfilUsuarioResponseDTO buscarPorUsuarioId(Long usuarioId) {
+    public PerfilUsuarioResponseDTO buscarPorUsuarioId(String usuarioId) {
         PerfilUsuario perfil = perfilRepository
                 .findByUsuarioIdAndDeletedAtIsNull(usuarioId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -58,7 +58,7 @@ public class PerfilUsuarioService {
     }
 
 
-    public PerfilUsuarioResponseDTO atualizar(Long usuarioId, PerfilUsuarioRequestDTO dto) {
+    public PerfilUsuarioResponseDTO atualizar(String usuarioId, PerfilUsuarioRequestDTO dto) {
         PerfilUsuario perfil = perfilRepository
                 .findByUsuarioIdAndDeletedAtIsNull(usuarioId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -74,7 +74,7 @@ public class PerfilUsuarioService {
     }
 
 
-    public void deletar(Long usuarioId) {
+    public void deletar(String usuarioId) {
         PerfilUsuario perfil = perfilRepository
                 .findByUsuarioIdAndDeletedAtIsNull(usuarioId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,

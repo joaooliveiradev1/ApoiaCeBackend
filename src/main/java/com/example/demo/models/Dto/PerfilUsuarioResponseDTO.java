@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class PerfilUsuarioResponseDTO {
 
     private String id;
-    private Long usuarioId;
+    private String usuarioId;
     private String nomeUsuario;
     private String email;
     private String bio;
@@ -24,8 +24,8 @@ public class PerfilUsuarioResponseDTO {
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
-    public Long getUsuarioId() { return usuarioId; }
-    public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
+    public String getUsuarioId() { return usuarioId; }
+    public void setUsuarioId(String usuarioId) { this.usuarioId = usuarioId; }
 
     public String getNomeUsuario() { return nomeUsuario; }
     public void setNomeUsuario(String nomeUsuario) { this.nomeUsuario = nomeUsuario; }

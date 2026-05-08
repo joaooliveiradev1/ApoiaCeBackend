@@ -18,9 +18,8 @@ import java.util.UUID;
 public class Projeto {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false)
-    private Long id;
+    @Column(length = 36)
+    private String id = UUID.randomUUID().toString();
 
     @Setter
     @NotBlank(message = "Título é obrigatório")
@@ -180,7 +179,7 @@ public class Projeto {
     }
 
 
-    public Long getId() { return id; }
+    public String getId() { return id; }
 
     public String getTitulo() { return titulo; }
 

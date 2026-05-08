@@ -24,7 +24,7 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Usuario buscarPorId(Long id) {
+    public Usuario buscarPorId(String id) {
         return usuarioRepository.findById(id)
                 .filter(u -> u.getDeletedAt() == null)
                 .orElseThrow(() -> new NoSuchElementException("Usuário não encontrado"));
@@ -54,7 +54,7 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    public Usuario atualizar(Long id, UsuarioUpdateRequest request) {
+    public Usuario atualizar(String id, UsuarioUpdateRequest request) {
         Usuario usuario = buscarPorId(id);
 
         if (request.getNome() != null) usuario.setNome(request.getNome());
@@ -65,7 +65,7 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    public void deletar(Long id) {
+    public void deletar(String id) {
         Usuario usuario = buscarPorId(id);
         usuario.setDeletedAt(OffsetDateTime.now());
         usuarioRepository.save(usuario);

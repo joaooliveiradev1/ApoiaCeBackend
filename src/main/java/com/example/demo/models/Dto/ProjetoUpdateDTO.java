@@ -30,7 +30,7 @@ public class ProjetoUpdateDTO {
     private TipoAssinatura tipoAssinatura;
 
     @NotNull(message = "Categoria é obrigatória")
-    private Long categoriaId;
+    private String categoriaId;
 
     private String videoUrl;
     private String capaUrl;

@@ -48,11 +48,28 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/categorias/**").permitAll()
                         .requestMatchers("/categorias/**").hasRole("ADMIN")
+                        .requestMatchers("/auth/forgot-password", "/auth/reset-password").permitAll()
+                        .requestMatchers("/webhooks/**").permitAll()
+                        .requestMatchers("/pagamentos/**").authenticated()
+
+                        // Perfil Usuario
                         .requestMatchers(HttpMethod.GET,    "/perfil").authenticated()
                         .requestMatchers(HttpMethod.POST,   "/perfil").authenticated()
                         .requestMatchers(HttpMethod.PATCH,  "/perfil").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/perfil").authenticated()
-                        .requestMatchers("/auth/forgot-password", "/auth/reset-password").permitAll()
+
+                        // Atualizacoes
+                        .requestMatchers(HttpMethod.GET,    "/projetos/*/atualizacoes/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,   "/projetos/*/atualizacoes/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT,    "/projetos/*/atualizacoes/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/projetos/*/atualizacoes/**").authenticated()
+
+                        // Conteúdos
+                        .requestMatchers(HttpMethod.GET,    "/projetos/*/conteudos/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,   "/projetos/*/conteudos/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT,    "/projetos/*/conteudos/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/projetos/*/conteudos/**").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);

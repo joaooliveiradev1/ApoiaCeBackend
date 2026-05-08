@@ -34,7 +34,7 @@ public class CategoriaService {
                 .toList();
     }
 
-    public CategoriaResponseDTO buscarPorId(Long id) {
+    public CategoriaResponseDTO buscarPorId(String id) {
         return categoriaRepository.findByIdAndDeletedAtIsNull(id)
                 .map(CategoriaResponseDTO::fromEntity)
                 .orElseThrow(() -> new NoSuchElementException("Categoria não encontrada"));
@@ -54,7 +54,7 @@ public class CategoriaService {
     }
 
     @Transactional
-    public CategoriaResponseDTO atualizar(Long id, CategoriaRequestDTO request) {
+    public CategoriaResponseDTO atualizar(String id, CategoriaRequestDTO request) {
         Categoria categoria = categoriaRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new NoSuchElementException("Categoria não encontrada"));
 
@@ -69,7 +69,7 @@ public class CategoriaService {
     }
 
     @Transactional
-    public void deletar(Long id) {
+    public void deletar(String id) {
         Categoria categoria = categoriaRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new NoSuchElementException("Categoria não encontrada"));
 

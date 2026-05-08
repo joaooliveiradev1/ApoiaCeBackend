@@ -14,7 +14,7 @@ public class PerfilUsuario {
 
     @Id
     @Column(name = "id", length = 36, nullable = false, updatable = false)
-    private String id;
+    private String id = UUID.randomUUID().toString();
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)

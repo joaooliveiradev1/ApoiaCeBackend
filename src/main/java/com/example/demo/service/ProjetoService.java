@@ -36,7 +36,7 @@ public class ProjetoService {
 
         Usuario criador = buscarUsuarioPorEmail(email);
         Categoria categoria = buscarCategoria(dto.getCategoriaId());
-        validarSlugUnico(dto.getTitulo(), null);
+        //validarSlugUnico(dto.getTitulo(), null);
 
         Projeto projeto = new Projeto();
         projeto.setTitulo(dto.getTitulo());
@@ -57,7 +57,7 @@ public class ProjetoService {
     @Transactional(readOnly = true)
     public Page<ProjetoResponseDTO> listar(
             StatusProjeto status,
-            Long categoriaId,
+            String categoriaId,
             TipoAssinatura tipoAssinatura,
             String titulo,
             Pageable pageable
@@ -97,7 +97,7 @@ public class ProjetoService {
     }
 
     @Transactional(readOnly = true)
-    public ProjetoResponseDTO buscarPorId(Long id) {
+    public ProjetoResponseDTO buscarPorId(String id) {
         return ProjetoResponseDTO.from(buscarProjeto(id));
     }
 
@@ -111,7 +111,7 @@ public class ProjetoService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ProjetoResponseDTO> listarPorCriador(Long criadorId, StatusProjeto status, Pageable pageable) {
+    public Page<ProjetoResponseDTO> listarPorCriador(String criadorId, StatusProjeto status, Pageable pageable) {
         if (status != null) {
             return projetoRepository
                     .findByCriadorIdAndStatus(criadorId, status, pageable)
@@ -125,13 +125,13 @@ public class ProjetoService {
     // ─── UPDATE ───────────────────────────────────────────────────
 
     @Transactional
-    public ProjetoResponseDTO atualizar(Long id, ProjetoUpdateDTO dto, String criadorEmail, boolean isAdmin) {
+    public ProjetoResponseDTO atualizar(String id, ProjetoUpdateDTO dto, String criadorEmail, boolean isAdmin) {
 
         Projeto projeto = buscarProjeto(id);
         Usuario solicitante = buscarUsuarioPorEmail(criadorEmail); // ← erro 1 corrigido
 
         validarPropriedade(projeto, solicitante.getId(), isAdmin);
-        validarSlugUnico(dto.getTitulo(), id);
+        //validarSlugUnico(dto.getTitulo(), id);
 
         Categoria categoria = buscarCategoria(dto.getCategoriaId());
 
@@ -154,7 +154,7 @@ public class ProjetoService {
     // ─── STATUS ───────────────────────────────────────────────────
 
     @Transactional
-    public ProjetoResponseDTO atualizarStatus(Long id, StatusProjeto novoStatus, String criadorEmail, boolean isAdmin) {
+    public ProjetoResponseDTO atualizarStatus(String id, StatusProjeto novoStatus, String criadorEmail, boolean isAdmin) {
         Projeto projeto = buscarProjeto(id);
         Usuario solicitante = buscarUsuarioPorEmail(criadorEmail); // ← erro 2 corrigido
 
@@ -166,7 +166,7 @@ public class ProjetoService {
     // ─── DELETE ───────────────────────────────────────────────────
 
     @Transactional
-    public void deletar(Long id, String criadorEmail, boolean isAdmin) {
+    public void deletar(String id, String criadorEmail, boolean isAdmin) {
         Projeto projeto = buscarProjeto(id);
         Usuario solicitante = buscarUsuarioPorEmail(criadorEmail); // ← erro 3 corrigido
 
@@ -188,34 +188,36 @@ public class ProjetoService {
     }
 
     // ─── Helpers privados ─────────────────────────────────────────
-
-    private Projeto buscarProjeto(Long id) {
+    @Transactional
+    private Projeto buscarProjeto(String id) {
         return projetoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Projeto não encontrado"));
     }
 
+    @Transactional
     private Usuario buscarUsuarioPorEmail(String email) {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }
 
-    private Categoria buscarCategoria(Long id) {
+    @Transactional
+    private Categoria buscarCategoria(String id) {
         return categoriaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Categoria não encontrada"));
     }
 
-    private void validarSlugUnico(String titulo, Long idAtual) {
-        if (projetoRepository.existsByTituloIgnoreCaseAndIdNot(
-                titulo, idAtual != null ? idAtual : 0L)) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT, "Já existe um projeto com este título");
-        }
-    }
+//    private void validarSlugUnico(String titulo, String idAtual) {
+//        if (projetoRepository.existsByTituloIgnoreCaseAndIdNot(
+//                titulo, idAtual != null ? idAtual : 0L)) {
+//            throw new ResponseStatusException(
+//                    HttpStatus.CONFLICT, "Já existe um projeto com este título");
+//        }
+//    }
 
-    private void validarPropriedade(Projeto projeto, Long solicitanteId, boolean isAdmin) {
+    private void validarPropriedade(Projeto projeto, String solicitanteId, boolean isAdmin) {
         if (!isAdmin && !projeto.getCriador().getId().equals(solicitanteId)) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN, "Sem permissão para modificar este projeto");

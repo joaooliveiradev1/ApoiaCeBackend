@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
+public interface CategoriaRepository extends JpaRepository<Categoria, String> {
 
     List<Categoria> findAllByDeletedAtIsNull();
 
-    Optional<Categoria> findByIdAndDeletedAtIsNull(Long id);
+    Optional<Categoria> findByIdAndDeletedAtIsNull(String id);
 
     boolean existsByNomeIgnoreCaseAndDeletedAtIsNull(String nome);
 
-    boolean existsByNomeIgnoreCaseAndDeletedAtIsNullAndIdNot(String nome, Long id);
+    boolean existsByNomeIgnoreCaseAndDeletedAtIsNullAndIdNot(String nome, String id);
 
     @Query("SELECT c FROM Categoria c WHERE LOWER(c.nome) LIKE LOWER(CONCAT('%', :nome, '%')) AND c.deletedAt IS NULL")
     List<Categoria> findByNomeContainingIgnoreCase(String nome);

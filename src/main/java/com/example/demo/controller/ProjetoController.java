@@ -42,7 +42,7 @@ public class ProjetoController {
     public ResponseEntity<Page<ProjetoResponseDTO>> listar(
             @RequestParam(required = false) String titulo,
             @RequestParam(required = false) StatusProjeto status,
-            @RequestParam(required = false) Long categoriaId,
+            @RequestParam(required = false) String categoriaId,
             @RequestParam(required = false) TipoAssinatura tipoAssinatura,
             @PageableDefault(size = 12, sort = "criadoEm") Pageable pageable
     ) {
@@ -53,7 +53,7 @@ public class ProjetoController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProjetoResponseDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<ProjetoResponseDTO> buscarPorId(@PathVariable String id) {
         return ResponseEntity.ok(projetoService.buscarPorId(id));
     }
 
@@ -66,7 +66,7 @@ public class ProjetoController {
     @GetMapping("/criador/{criadorId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<ProjetoResponseDTO>> listarPorCriador(
-            @PathVariable Long criadorId,
+            @PathVariable String criadorId,
             @RequestParam(required = false) StatusProjeto status,
             @PageableDefault(size = 12, sort = "criadoEm") Pageable pageable
     ) {
@@ -78,7 +78,7 @@ public class ProjetoController {
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ProjetoResponseDTO> atualizar(
-            @PathVariable Long id,
+            @PathVariable String id,
             @Valid @RequestBody ProjetoUpdateDTO dto,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
@@ -93,7 +93,7 @@ public class ProjetoController {
     @PatchMapping("/{id}/status")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ProjetoResponseDTO> atualizarStatus(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestParam StatusProjeto status,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
@@ -108,7 +108,7 @@ public class ProjetoController {
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> deletar(
-            @PathVariable Long id,
+            @PathVariable String id,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         boolean isAdmin = userDetails.getAuthorities().stream()

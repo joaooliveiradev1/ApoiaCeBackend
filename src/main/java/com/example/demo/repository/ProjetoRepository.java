@@ -12,21 +12,21 @@ import java.time.LocalDate;
 import java.util.Optional;
 
     @Repository
-    public interface ProjetoRepository extends JpaRepository<Projeto, Long> {
+    public interface ProjetoRepository extends JpaRepository<Projeto, String> {
 
         Optional<Projeto> findBySlug(String slug);
         boolean existsBySlug(String slug);
-        boolean existsByTituloIgnoreCaseAndIdNot(String titulo, Long id);
+        boolean existsByTituloIgnoreCaseAndIdNot(String titulo, String id);
 
         Page<Projeto> findByStatus(StatusProjeto status, Pageable pageable);
         long countByStatus(StatusProjeto status);
 
-        Page<Projeto> findByCriadorId(Long criadorId, Pageable pageable);
-        Page<Projeto> findByCriadorIdAndStatus(Long criadorId, StatusProjeto status, Pageable pageable);
-        long countByCriadorId(Long criadorId);
+        Page<Projeto> findByCriadorId(String criadorId, Pageable pageable);
+        Page<Projeto> findByCriadorIdAndStatus(String criadorId, StatusProjeto status, Pageable pageable);
+        long countByCriadorId(String criadorId);
 
-        Page<Projeto> findByCategoriaId(Long categoriaId, Pageable pageable);
-        Page<Projeto> findByStatusAndCategoriaId(StatusProjeto status, Long categoriaId, Pageable pageable);
+        Page<Projeto> findByCategoriaId(String categoriaId, Pageable pageable);
+        Page<Projeto> findByStatusAndCategoriaId(StatusProjeto status, String categoriaId, Pageable pageable);
 
         Page<Projeto> findByTipoAssinatura(TipoAssinatura tipo, Pageable pageable);
         Page<Projeto> findByStatusAndTipoAssinatura(StatusProjeto status, TipoAssinatura tipo, Pageable pageable);

@@ -9,11 +9,11 @@ import java.util.Optional;
 @Repository
 public interface PerfilUsuarioRepository extends JpaRepository<PerfilUsuario, String> {
 
-    Optional<PerfilUsuario> findByUsuarioId(Long usuarioId);
+    Optional<PerfilUsuario> findByUsuarioId(String usuarioId);
 
-    Optional<PerfilUsuario> findByUsuarioIdAndDeletedAtIsNull(Long usuarioId);
+    Optional<PerfilUsuario> findByUsuarioIdAndDeletedAtIsNull(String usuarioId);
 
-    boolean existsByUsuarioId(Long usuarioId);
+    boolean existsByUsuarioId(String usuarioId);
 
-    boolean existsByUsuarioIdAndDeletedAtIsNull(Long usuarioId);
+    boolean existsByUsuarioIdAndDeletedAtIsNull(String usuarioId);
 }

@@ -1,13 +1,8 @@
 package com.example.demo.service;
 
-import com.example.demo.models.Dto.*;
-import com.example.demo.models.Entity.PasswordResetToken;
-import com.example.demo.models.Entity.Usuario;
-import com.example.demo.models.Enums.UsuarioRole;
-import com.example.demo.repository.PasswordResetTokenRepository;
-import com.example.demo.repository.UsuarioRepository;
-import com.example.demo.service.JwtService;
-import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,8 +11,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
+import com.example.demo.models.Dto.ForgotPasswordRequestDTO;
+import com.example.demo.models.Dto.LoginRequestDTO;
+import com.example.demo.models.Dto.LoginResponseDTO;
+import com.example.demo.models.Dto.ResetPasswordRequestDTO;
+import com.example.demo.models.Dto.UsuarioCreateRequest;
+import com.example.demo.models.Entity.PasswordResetToken;
+import com.example.demo.models.Entity.Usuario;
+import com.example.demo.models.Enums.UsuarioRole;
+import com.example.demo.repository.PasswordResetTokenRepository;
+import com.example.demo.repository.UsuarioRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class AuthService {
@@ -67,7 +72,7 @@ public class AuthService {
         newUser.setNome(dto.getNome());
         newUser.setEmail(dto.getEmail());
         newUser.setSenhaHash(passwordEncoder.encode(dto.getSenha()));
-        newUser.setRole(UsuarioRole.APOIADOR);
+        newUser.setRole(UsuarioRole.CRIADOR);
         newUser.setCpf(dto.getCpf());
         newUser.setDataNascimento(dto.getDataNascimento());
 

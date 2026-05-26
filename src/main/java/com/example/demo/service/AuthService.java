@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -71,7 +70,7 @@ public class AuthService {
         newUser.setNome(dto.getNome());
         newUser.setEmail(dto.getEmail());
         newUser.setSenhaHash(passwordEncoder.encode(dto.getSenha()));
-        newUser.setRole(UsuarioRole.APOIADOR);
+        newUser.setRole(UsuarioRole.CRIADOR);
         newUser.setCpf(dto.getCpf());
         newUser.setDataNascimento(dto.getDataNascimento());
 

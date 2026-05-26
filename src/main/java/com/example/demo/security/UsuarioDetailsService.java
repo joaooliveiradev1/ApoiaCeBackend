@@ -19,19 +19,7 @@ public class UsuarioDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByEmail(email)
+        return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
-
-        String role = "ROLE_" + usuario.getRole().name();
-
-        return new org.springframework.security.core.userdetails.User(
-                usuario.getEmail(),
-                usuario.getSenhaHash(),
-                usuario.getDeletedAt() == null,  // enabled
-                true,  // accountNonExpired
-                true,  // credentialsNonExpired
-                true,  // accountNonLocked
-                List.of(new SimpleGrantedAuthority(role))
-        );
     }
 }

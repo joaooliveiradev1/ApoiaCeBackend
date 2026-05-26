@@ -70,6 +70,17 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,    "/projetos/*/conteudos/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/projetos/*/conteudos/**").authenticated()
 
+                        //enquetes
+                        .requestMatchers(HttpMethod.GET,    "/enquetes/**").authenticated()
+                        .requestMatchers(HttpMethod.POST,   "/enquetes/**").authenticated()
+                        .requestMatchers(HttpMethod.PATCH,  "/enquetes/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/enquetes/**").authenticated()
+
+                        //notificacoes
+                        .requestMatchers(HttpMethod.GET,    "/notificacoes/**").authenticated()
+                        .requestMatchers(HttpMethod.PATCH,  "/notificacoes/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/notificacoes/**").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);

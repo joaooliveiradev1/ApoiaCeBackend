@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -47,7 +48,10 @@ public class AuthService {
         var usuario = usuarioRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new BadCredentialsException("Credenciais inválidas"));
 
-        String token = jwtService.gerarToken(usuario.getEmail());
+        String token = jwtService.gerarToken(usuario.getEmail(), Map.of(
+                "id", usuario.getId(),
+                "nome", usuario.getNome()
+        ));
 
         LoginResponseDTO resp = new LoginResponseDTO();
         resp.setToken(token);
@@ -73,7 +77,10 @@ public class AuthService {
 
         Usuario saved = usuarioRepository.save(newUser);
 
-        String token = jwtService.gerarToken(saved.getEmail());
+        String token = jwtService.gerarToken(saved.getEmail(), Map.of(
+                "id", saved.getId(),
+                "nome", saved.getNome()
+        ));
 
         LoginResponseDTO resp = new LoginResponseDTO();
         resp.setToken(token);

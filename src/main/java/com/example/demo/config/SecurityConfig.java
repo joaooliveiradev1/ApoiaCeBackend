@@ -1,11 +1,13 @@
 package com.example.demo.config;
 
-import com.example.demo.security.JwtFilter;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -16,10 +18,11 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import com.example.demo.security.JwtFilter;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity // ← adiciona essa linha
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
@@ -80,6 +83,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,    "/notificacoes/**").authenticated()
                         .requestMatchers(HttpMethod.PATCH,  "/notificacoes/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/notificacoes/**").authenticated()
+
+
+                        // Projetos  ← ADICIONA AQUI
+                        .requestMatchers(HttpMethod.GET,    "/projetos/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,   "/projetos/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT,    "/projetos/**").authenticated()
+                        .requestMatchers(HttpMethod.PATCH,  "/projetos/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/projetos/**").authenticated()
 
                         .anyRequest().authenticated()
                 )

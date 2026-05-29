@@ -20,7 +20,7 @@ public class PagamentoController {
 
     // Apoiador gera uma cobrança PIX para sua assinatura
     @PostMapping("/gerar")
-    @PreAuthorize("hasAnyRole('APOIADOR', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('APOIADOR', 'CRIADOR', 'ADMIN')")
     public ResponseEntity<PagamentoResponseDTO> gerarCobranca(
             @Valid @RequestBody GerarCobrancaRequestDTO request) {
 
@@ -35,5 +35,18 @@ public class PagamentoController {
             @PathVariable String assinaturaId) {
 
         return ResponseEntity.ok(pagamentoService.listarPorAssinatura(assinaturaId));
+    }
+
+    // ENDPOINT DE SIMULAÇÃO: Força o pagamento a ser confirmado no banco
+    @PostMapping("/{id}/simular-pago")
+    @PreAuthorize("hasAnyRole('APOIADOR', 'CRIADOR', 'ADMIN')")
+    public ResponseEntity<String> simularPagamentoSucesso(@PathVariable String id) {
+        // 1. Busca o pagamento pendente no banco
+        com.example.demo.models.Entity.Pagamento pagamento = pagamentoService.getPagamentoEntityPorId(id); 
+        
+        // 2. Chama a regra de confirmação que você já criou (atualiza assinatura e projeto)
+        pagamentoService.confirmarPagamentoExterno(pagamento);
+        
+        return ResponseEntity.ok("Sucesso! O pagamento foi simulado e o projeto atualizado.");
     }
 }

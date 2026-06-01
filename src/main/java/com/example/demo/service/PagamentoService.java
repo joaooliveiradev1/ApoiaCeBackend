@@ -6,6 +6,7 @@ import com.example.demo.models.Dto.PagamentoResponseDTO;
 import com.example.demo.models.Dto.WebhookPayloadDTO;
 import com.example.demo.models.Entity.Assinatura;
 import com.example.demo.models.Entity.Pagamento;
+import com.example.demo.models.Entity.Projeto;
 import com.example.demo.models.Enums.MeioPagamento;
 import com.example.demo.models.Enums.PagamentoStatus;
 import com.example.demo.repository.AssinaturaRepository;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.demo.repository.ProjetoRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,6 +30,7 @@ public class PagamentoService {
     private final PagamentoRepository pagamentoRepository;
     private final AssinaturaRepository assinaturaRepository;
     private final AbacatePayClient abacatePayClient;
+    private final ProjetoRepository projetoRepository;
 
     // Gerar cobrança PIX
 
@@ -120,19 +123,24 @@ public class PagamentoService {
     // Métodos privados
 
     private void confirmarPagamento(Pagamento pagamento) {
-        pagamento.confirmar();
+    pagamento.confirmar();
 
-        Assinatura assinatura = pagamento.getAssinatura();
-        assinatura.setProximaCobrancaEm(
-                assinatura.getProximaCobrancaEm().plusMonths(1));
+    Assinatura assinatura = pagamento.getAssinatura();
+    assinatura.setProximaCobrancaEm(
+            assinatura.getProximaCobrancaEm().plusMonths(1));
+    assinaturaRepository.save(assinatura);
 
-        assinaturaRepository.save(assinatura);
+    // ← Atualiza o projeto
+    Projeto projeto = assinatura.getProjeto();
+    projeto.setValorCaptado(projeto.getValorCaptado().add(pagamento.getValorPago()));
+    projeto.setQtdApoiadores(projeto.getQtdApoiadores() + 1);
+    projetoRepository.save(projeto);
 
-        log.info("Pagamento confirmado | id={} assinatura={} proximaCobranca={}",
-                pagamento.getId(),
-                assinatura.getId(),
-                assinatura.getProximaCobrancaEm());
-    }
+    log.info("Pagamento confirmado | id={} assinatura={} proximaCobranca={}",
+            pagamento.getId(),
+            assinatura.getId(),
+            assinatura.getProximaCobrancaEm());
+}
 
     private void validarAssinaturaAtiva(Assinatura assinatura) {
         if (assinatura.getCanceladaEm() != null) {
@@ -148,5 +156,24 @@ public class PagamentoService {
         if (jaExiste) {
             throw new BusinessException("Já existe uma cobrança pendente para este mês");
         }
+    }
+    // Método para o controller buscar o pagamento na simulação
+    public com.example.demo.models.Entity.Pagamento getPagamentoEntityPorId(String id) {
+        return pagamentoRepository.findById(id)
+                .orElseThrow(() -> new com.example.demo.exception.BusinessException("Pagamento não encontrado"));
+    }
+
+    // Método que abre a transação e executa a sua lógica privada de confirmação
+    @Transactional
+    public void confirmarPagamentoExterno(com.example.demo.models.Entity.Pagamento pagamento) {
+        if (!pagamento.isPendente()) {
+            throw new com.example.demo.exception.BusinessException("Este pagamento já foi processado!");
+        }
+        
+        // Chama o seu método privado existente que faz toda a mágica no Projeto
+        confirmarPagamento(pagamento); 
+        
+        // Salva o novo status do pagamento (de PENDENTE para CONFIRMADO/PAGO)
+        pagamentoRepository.save(pagamento); 
     }
 }

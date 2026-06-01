@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "atualizacoes")
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 public class Atualizacao {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", columnDefinition = "char(36)", nullable = false, updatable = false)
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -47,7 +48,6 @@ public class Atualizacao {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    // soft delete
     public void softDelete() {
         this.deletedAt = LocalDateTime.now();
     }
@@ -58,6 +58,7 @@ public class Atualizacao {
 
     @PrePersist
     void prePersist() {
+        if (this.id == null) this.id = UUID.randomUUID().toString();
         criadoEm = LocalDateTime.now();
         atualizadoEm = LocalDateTime.now();
     }

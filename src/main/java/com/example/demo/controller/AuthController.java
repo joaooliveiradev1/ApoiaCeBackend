@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.models.Dto.*;
 import com.example.demo.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @Operation(summary = "Faça login")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO request) {
         try {
@@ -33,12 +35,14 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Registrando usuario")
     @PostMapping("/register")
     public ResponseEntity<LoginResponseDTO> register(@Valid @RequestBody UsuarioCreateRequest request) {
         LoginResponseDTO response = authService.registro(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Operation(summary = "Solicitando token pra reset de senha")
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(
             @Valid @RequestBody ForgotPasswordRequestDTO dto) {
@@ -47,6 +51,7 @@ public class AuthController {
         return ResponseEntity.ok("Token gerado (dev): " + token);
     }
 
+    @Operation(summary = "Resetando senha")
     @PostMapping("/reset-password")
     public ResponseEntity<Void> resetPassword(
             @Valid @RequestBody ResetPasswordRequestDTO dto) {

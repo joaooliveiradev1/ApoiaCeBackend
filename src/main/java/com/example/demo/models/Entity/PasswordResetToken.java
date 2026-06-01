@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-
+import java.util.UUID;
 
 @Data
 @Entity
@@ -12,8 +12,7 @@ import java.time.LocalDateTime;
 public class PasswordResetToken {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(length = 36, updatable = false, nullable = false)
+    @Column(name = "id", columnDefinition = "char(36)", updatable = false, nullable = false)
     private String id;
 
     @Column(nullable = false, unique = true, length = 120)
@@ -29,6 +28,10 @@ public class PasswordResetToken {
     @Column(name = "used_at")
     private LocalDateTime usedAt;
 
+    @PrePersist
+    private void prePersist() {
+        if (this.id == null) this.id = UUID.randomUUID().toString();
+    }
 
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(this.expiresAt);
@@ -37,6 +40,4 @@ public class PasswordResetToken {
     public boolean isUsed() {
         return this.usedAt != null;
     }
-
-
 }

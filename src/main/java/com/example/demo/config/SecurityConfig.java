@@ -51,6 +51,8 @@ public class SecurityConfig {
                         .requestMatchers("/auth/forgot-password", "/auth/reset-password").permitAll()
                         .requestMatchers("/webhooks/**").permitAll()
                         .requestMatchers("/pagamentos/**").authenticated()
+                        .requestMatchers( "/v3/api-docs",
+                                "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
                         // Perfil Usuario
                         .requestMatchers(HttpMethod.GET,    "/perfil").authenticated()

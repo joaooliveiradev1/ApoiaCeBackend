@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.models.Dto.GerarCobrancaRequestDTO;
 import com.example.demo.models.Dto.PagamentoResponseDTO;
 import com.example.demo.service.PagamentoService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ public class PagamentoController {
     private final PagamentoService pagamentoService;
 
     // Apoiador gera uma cobrança PIX para sua assinatura
+    @Operation(summary = "Gera cobrança pix para assinatura")
     @PostMapping("/gerar")
     @PreAuthorize("hasAnyRole('APOIADOR', 'ADMIN')")
     public ResponseEntity<PagamentoResponseDTO> gerarCobranca(
@@ -29,6 +31,7 @@ public class PagamentoController {
     }
 
     // Histórico de pagamentos de uma assinatura
+    @Operation(summary = "Gera histórico de pagamentos de uma assinatura")
     @GetMapping("/assinatura/{assinaturaId}")
     @PreAuthorize("hasAnyRole('APOIADOR', 'CRIADOR', 'ADMIN')")
     public ResponseEntity<List<PagamentoResponseDTO>> listarPorAssinatura(

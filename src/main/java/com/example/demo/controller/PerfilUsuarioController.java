@@ -4,6 +4,7 @@ import com.example.demo.models.Dto.PerfilUsuarioRequestDTO;
 import com.example.demo.models.Dto.PerfilUsuarioResponseDTO;
 import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.service.PerfilUsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ public class PerfilUsuarioController {
         this.usuarioRepository = usuarioRepository;
     }
 
+    @Operation(summary = "Criar userProfile")
     @PostMapping
     public ResponseEntity<PerfilUsuarioResponseDTO> criar(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -34,6 +36,7 @@ public class PerfilUsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Operation(summary = "Buscar userProfile")
     @GetMapping
     public ResponseEntity<PerfilUsuarioResponseDTO> buscar(
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -42,6 +45,7 @@ public class PerfilUsuarioController {
         return ResponseEntity.ok(perfilService.buscarPorUsuarioId(usuarioId));
     }
 
+    @Operation(summary = "Att userProfile")
     @PatchMapping
     public ResponseEntity<PerfilUsuarioResponseDTO> atualizar(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -51,6 +55,7 @@ public class PerfilUsuarioController {
         return ResponseEntity.ok(perfilService.atualizar(usuarioId, dto));
     }
 
+    @Operation(summary = "Deletar userProfile")
     @DeleteMapping
     public ResponseEntity<Void> deletar(
             @AuthenticationPrincipal UserDetails userDetails) {

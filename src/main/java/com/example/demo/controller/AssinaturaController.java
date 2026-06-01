@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.models.Dto.AssinaturaRequestDTO;
 import com.example.demo.models.Dto.AssinaturaResponseDTO;
 import com.example.demo.service.AssinaturaService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ public class AssinaturaController {
     }
 
     // POST /assinaturas — assinar um projeto
+    @Operation(summary = "Assinar um projeto")
     @PostMapping
     public ResponseEntity<AssinaturaResponseDTO> assinar(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -33,7 +35,9 @@ public class AssinaturaController {
                 .body(assinaturaService.assinar(userDetails.getUsername(), dto));
     }
 
+
     // GET /assinaturas/minhas — listar minhas assinaturas ativas
+    @Operation(summary = "Listar minhas assinaturas ativas")
     @GetMapping("/minhas")
     public ResponseEntity<List<AssinaturaResponseDTO>> minhasAssinaturas(
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -42,6 +46,7 @@ public class AssinaturaController {
     }
 
     // GET /assinaturas/{id} — buscar uma assinatura específica
+    @Operation(summary = "Buscar assinatura by ID")
     @GetMapping("/{id}")
     public ResponseEntity<AssinaturaResponseDTO> buscarPorId(
             @PathVariable String id,
@@ -51,6 +56,7 @@ public class AssinaturaController {
     }
 
     // GET /assinaturas/projeto/{projetoId} — listar assinantes ativos de um projeto
+    @Operation(summary = "Listar assinaturas ativas de um projeto")
     @GetMapping("/projeto/{projetoId}")
     public ResponseEntity<List<AssinaturaResponseDTO>> assinantesDoProjeto(
             @PathVariable String projetoId) {
@@ -59,6 +65,7 @@ public class AssinaturaController {
     }
 
     // GET /assinaturas/projeto/{projetoId}/contagem — total de assinantes ativos
+    @Operation(summary = "Contagem de assinantes ativos de um projeto")
     @GetMapping("/projeto/{projetoId}/contagem")
     public ResponseEntity<Long> contarAssinantes(@PathVariable String projetoId) {
         return ResponseEntity.ok(
@@ -66,6 +73,7 @@ public class AssinaturaController {
     }
 
     // GET /assinaturas/projeto/{projetoId}/receita — receita total ativa
+    @Operation(summary = "Receita total ativa do projeto")
     @GetMapping("/projeto/{projetoId}/receita")
     public ResponseEntity<BigDecimal> receitaAtiva(@PathVariable String projetoId) {
         return ResponseEntity.ok(
@@ -73,6 +81,7 @@ public class AssinaturaController {
     }
 
     // PATCH /assinaturas/{id}/cancelar — cancelar assinatura
+    @Operation(summary = "Cancelar assinatura")
     @PatchMapping("/{id}/cancelar")
     public ResponseEntity<AssinaturaResponseDTO> cancelar(
             @PathVariable String id,

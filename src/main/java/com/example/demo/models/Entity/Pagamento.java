@@ -20,22 +20,19 @@ import java.util.UUID;
 public class Pagamento {
 
     @Id
-    @Column(length = 36, updatable = false, nullable = false)
-    private String id = UUID.randomUUID().toString();
+    @Column(name = "id", columnDefinition = "char(36)", updatable = false, nullable = false)
+    private String id;
 
-    // Vínculo com a assinatura que originou este pagamento
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assinatura_id", nullable = false)
     private Assinatura assinatura;
 
-    // ID da transação retornado pelo gateway (AbacatePay)
     @Column(name = "gateway_tx_id", length = 120)
     private String gatewayTxId;
 
     @Column(name = "valor_pago", precision = 12, scale = 2)
     private BigDecimal valorPago;
 
-    // Valor já descontada a taxa da plataforma
     @Column(name = "valor_liquido", precision = 12, scale = 2)
     private BigDecimal valorLiquido;
 
@@ -50,10 +47,8 @@ public class Pagamento {
     @Column(name = "meio_pagamento")
     private MeioPagamento meioPagamento;
 
-    // Número de parcelas (1 para PIX/boleto, N para cartão)
     private Integer parcelas = 1;
 
-    // Mês de referência da cobrança (ex: 2026-05)
     private LocalDate competencia;
 
     @Column(name = "data_pagamento")
@@ -68,12 +63,16 @@ public class Pagamento {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @PrePersist
+    private void prePersist() {
+        if (this.id == null) this.id = UUID.randomUUID().toString();
+    }
+
     @PreUpdate
     private void preUpdate() {
         this.atualizadoEm = LocalDateTime.now();
     }
 
-    // Métodos de domínio — lógica de negócio encapsulada na entidade
     public boolean isPendente() {
         return this.status == PagamentoStatus.PENDENTE;
     }

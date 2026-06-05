@@ -1,0 +1,129 @@
+type Query {
+    # Projetos
+    projetos: [Projeto!]!
+    projeto(id: ID!): Projeto
+    projetosPorCategoria(categoriaId: ID!): [Projeto!]!
+    projetosPorStatus(status: StatusProjeto!): [Projeto!]!
+    projetosPorCriador(criadorId: ID!): [Projeto!]!
+    projetosPorTitulo(titulo: String!): [Projeto!]!
+
+    # Usuarios
+    usuarios: [Usuario!]!
+    usuario(id: ID!): Usuario
+    searchUsuarios(nome: String!): [Usuario!]!
+
+    # Categorias
+    categorias: [Categoria!]!
+    categoria(id: ID!): Categoria
+    searchCategorias(nome: String!): [Categoria!]!
+
+    # Assinaturas
+    assinaturas: [Assinatura!]!
+    assinatura(id: ID!): Assinatura
+
+    assinaturasPorProjeto(projetoId: ID!): [Assinatura!]!
+    assinaturasPorProjetoEStatus(projetoId: ID!, status: AssinaturaStatus!): [Assinatura!]!
+    assinaturasPorAssinante(assinanteId: ID!): [Assinatura!]!
+    assinaturasPorAssinanteEStatus(assinanteId: ID!, status: AssinaturaStatus!): [Assinatura!]!
+
+    totalApoioAtivoProjeto(projetoId: ID!): String!
+    totalApoiadoresAtivosProjeto(projetoId: ID!): Int!
+
+    # Pagamentos
+    pagamentosPorAssinatura(assinaturaId: ID!): [Pagamento]
+
+    # Atualizações
+    atualizacoesPorProjeto(projetoId: ID!): [Atualizacao]
+
+    # Perfil
+    perfilUsuario(usuarioId: ID!): PerfilUsuario
+}
+
+
+
+
+enum StatusProjeto {
+    RASCUNHO,
+    PUBLICADO,
+    PAUSADO,
+    ENCERRADO
+}
+
+type Projeto {
+    id: ID!
+    titulo: String
+    slug: String
+    descricao: String
+    metaValor: Float
+    valorCaptado: Float
+    qtdApoiadores: Int
+    dataFim: String
+    tipoAssinatura: String
+    status: String
+    videoUrl: String
+    capaUrl: String
+    criadoEm: String
+    categoria: Categoria
+    criador: Usuario
+    atualizacoes: [Atualizacao]
+}
+
+type Usuario {
+    id: ID!
+    nome: String!
+    criadoEm: String
+}
+
+type PerfilUsuario {
+    id: ID!
+    bio: String
+}
+
+type Categoria {
+    id: ID!
+    nome: String!
+}
+
+type Assinatura {
+    id: ID!
+    valor: String!
+    anonima: Boolean!
+    status: AssinaturaStatus!
+    recorrente: Boolean!
+    inicioEm: String
+    canceladaEm: String
+    proximaCobrancaEm: String
+    criadoEm: String!
+    atualizadoEm: String
+
+    projeto: Projeto!
+    assinante: Usuario
+}
+
+enum AssinaturaStatus {
+    ATIVA
+    CANCELADA
+    PAUSADA
+    INADIMPLENTE
+}
+
+type Pagamento {
+    id: ID!
+    gatewayTxId: String
+    valorPago: Float
+    status: String
+    meioPagamento: String
+    taxaPlataforma: Float
+    valorLiquido: Float
+    competencia: String
+    dataPagamento: String
+    criadoEm: String
+}
+
+type Atualizacao {
+    id: ID!
+    titulo: String
+    conteudoPublico: String
+    exclusiva: Boolean
+    publicadaEm: String
+}

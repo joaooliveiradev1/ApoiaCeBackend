@@ -5,10 +5,13 @@ import com.example.demo.models.Enums.StatusProjeto;
 import com.example.demo.models.Enums.TipoAssinatura;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
     @Repository
@@ -36,5 +39,17 @@ import java.util.Optional;
 
         Page<Projeto> findByStatusAndDataFimBetween(StatusProjeto status, LocalDate inicio, LocalDate fim, Pageable pageable);
         Page<Projeto> findByStatusAndDataFimBefore(StatusProjeto status, LocalDate data, Pageable pageable);
+
+        @EntityGraph(attributePaths = {"categoria", "criador"})
+        List<Projeto> findAllBy();
+
+        @EntityGraph(attributePaths = {"categoria", "criador"})
+        Optional<Projeto> findProjetoWithCategoriaAndCriadorById(String id);
+
+        @EntityGraph (attributePaths = {"categoria", "criador"})
+        List<Projeto> findByCategoriaId(String categoriaId);
+
+        @EntityGraph(attributePaths = {"categoria", "criador"})
+        List<Projeto> findProjetosByStatus(StatusProjeto status);
     }
 

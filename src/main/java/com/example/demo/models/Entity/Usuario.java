@@ -9,23 +9,26 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "usuarios")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Usuario {
+public class Usuario implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false)
-    private Long id;
+    @Column(name = "id", columnDefinition = "char(36)", nullable = false, updatable = false)
+    private String id;
 
     @Column(name = "nome", nullable = false, length = 120)
     @NotBlank(message = "Nome é obrigatório")
@@ -66,6 +69,7 @@ public class Usuario {
     @PrePersist
     public void prePersist() {
         var now = OffsetDateTime.now();
+        if (id == null) id = UUID.randomUUID().toString();
         if (criadoEm == null) criadoEm = now;
         if (atualizadoEm == null) atualizadoEm = now;
         if (role == null) role = UsuarioRole.APOIADOR;
@@ -78,6 +82,41 @@ public class Usuario {
 
     public boolean isDeleted() {
         return deletedAt != null;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+    }
+
+    @Override
+    public String getPassword() {
+        return senhaHash;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return deletedAt == null;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
     @Override

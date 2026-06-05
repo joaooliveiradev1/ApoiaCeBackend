@@ -9,7 +9,7 @@ import java.util.UUID;
 @Data
 public class UsuarioDTO {
 
-    private Long id;
+    private String id;
     private String nome;
     private String email;
     private String cpf;

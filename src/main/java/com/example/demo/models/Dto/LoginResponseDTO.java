@@ -9,7 +9,7 @@ import java.util.UUID;
 public class LoginResponseDTO {
 
     private String token;
-    private Long usuarioId;
+    private String usuarioId;
     private String nome;
     private String email;
     private UsuarioRole role;

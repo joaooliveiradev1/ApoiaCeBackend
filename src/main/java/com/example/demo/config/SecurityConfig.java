@@ -14,6 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -45,45 +46,49 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/graphql", "/graphiql"))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(
+                                "/auth/**",
+                                "/auth/forgot-password",
+                                "/auth/reset-password",
+                                "/webhooks/**",
+                                "/graphiql",
+                                "/graphiql/**",
+                                "/graphql",
+                                "/error"
+                        ).permitAll()
+
                         .requestMatchers(HttpMethod.GET, "/categorias/**").permitAll()
                         .requestMatchers("/categorias/**").hasRole("ADMIN")
-                        .requestMatchers("/auth/forgot-password", "/auth/reset-password").permitAll()
-                        .requestMatchers("/webhooks/**").permitAll()
+
                         .requestMatchers("/pagamentos/**").authenticated()
                         .requestMatchers( "/v3/api-docs",
                                 "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
-                        // Perfil Usuario
-                        .requestMatchers(HttpMethod.GET,    "/perfil").authenticated()
-                        .requestMatchers(HttpMethod.POST,   "/perfil").authenticated()
-                        .requestMatchers(HttpMethod.PATCH,  "/perfil").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/perfil").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/perfil").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/perfil").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/perfil").authenticated()
 
-                        // Atualizacoes
-                        .requestMatchers(HttpMethod.GET,    "/projetos/*/atualizacoes/**").permitAll()
-                        .requestMatchers(HttpMethod.POST,   "/projetos/*/atualizacoes/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT,    "/projetos/*/atualizacoes/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/projetos/*/atualizacoes/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/projetos/*/atualizacoes/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/projetos/*/atualizacoes/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/projetos/*/atualizacoes/**").authenticated()
 
-                        // Conteúdos
-                        .requestMatchers(HttpMethod.GET,    "/projetos/*/conteudos/**").permitAll()
-                        .requestMatchers(HttpMethod.POST,   "/projetos/*/conteudos/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT,    "/projetos/*/conteudos/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/projetos/*/conteudos/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/projetos/*/conteudos/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/projetos/*/conteudos/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/projetos/*/conteudos/**").authenticated()
 
-                        //enquetes
-                        .requestMatchers(HttpMethod.GET,    "/enquetes/**").authenticated()
-                        .requestMatchers(HttpMethod.POST,   "/enquetes/**").authenticated()
-                        .requestMatchers(HttpMethod.PATCH,  "/enquetes/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/enquetes/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/enquetes/**").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/enquetes/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/enquetes/**").authenticated()
 
-                        //notificacoes
-                        .requestMatchers(HttpMethod.GET,    "/notificacoes/**").authenticated()
-                        .requestMatchers(HttpMethod.PATCH,  "/notificacoes/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/notificacoes/**").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/notificacoes/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/notificacoes/**").authenticated()
 
 
@@ -96,17 +101,16 @@ public class SecurityConfig {
 
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of("http://localhost:5173")); // Front (Vite)
+        config.setAllowedOrigins(List.of("http://localhost:5173"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

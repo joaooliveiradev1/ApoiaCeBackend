@@ -27,8 +27,8 @@ import java.util.UUID;
 public class Usuario implements UserDetails {
 
     @Id
-    @Column(name = "id", length = 36, nullable = false, updatable = false)
-    private String id = UUID.randomUUID().toString();
+    @Column(name = "id", columnDefinition = "char(36)", nullable = false, updatable = false)
+    private String id;
 
     @Column(name = "nome", nullable = false, length = 120)
     @NotBlank(message = "Nome é obrigatório")
@@ -69,6 +69,7 @@ public class Usuario implements UserDetails {
     @PrePersist
     public void prePersist() {
         var now = OffsetDateTime.now();
+        if (id == null) id = UUID.randomUUID().toString();
         if (criadoEm == null) criadoEm = now;
         if (atualizadoEm == null) atualizadoEm = now;
         if (role == null) role = UsuarioRole.APOIADOR;

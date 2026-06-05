@@ -18,8 +18,8 @@ import java.util.UUID;
 public class Projeto {
 
     @Id
-    @Column(length = 36)
-    private String id = UUID.randomUUID().toString();
+    @Column(name = "id", columnDefinition = "char(36)", nullable = false, updatable = false)
+    private String id;
 
     @Setter
     @NotBlank(message = "Título é obrigatório")
@@ -30,8 +30,6 @@ public class Projeto {
     @Setter
     @Column(name = "slug", length = 180, unique = true, nullable = false)
     private String slug;
-
-    // content
 
     @Setter
     @Column(name = "descricao", columnDefinition = "TEXT")
@@ -44,8 +42,6 @@ public class Projeto {
     @Setter
     @Column(name = "capa_url", columnDefinition = "TEXT")
     private String capaUrl;
-
-    // financeiro
 
     @Setter
     @NotNull(message = "Meta de valor é obrigatória")
@@ -61,8 +57,6 @@ public class Projeto {
     @Setter
     @Column(name = "qtd_apoiadores", nullable = false)
     private Integer qtdApoiadores = 0;
-
-    // validações
 
     @Setter
     @NotNull(message = "Data de encerramento é obrigatória")
@@ -83,8 +77,6 @@ public class Projeto {
             columnDefinition = "ENUM('RASCUNHO','PUBLICADO','PAUSADO','ENCERRADO')")
     private StatusProjeto status = StatusProjeto.RASCUNHO;
 
-    // relationships
-
     @Setter
     @NotNull(message = "Criador é obrigatório")
     @ManyToOne(fetch = FetchType.LAZY)
@@ -99,8 +91,6 @@ public class Projeto {
             foreignKey = @ForeignKey(name = "fk_projeto_categoria"))
     private Categoria categoria;
 
-    // querys de pesquisa
-
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
 
@@ -110,10 +100,9 @@ public class Projeto {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    // hooks
-
     @PrePersist
     private void prePersist() {
+        if (this.id == null) this.id = UUID.randomUUID().toString();
         this.criadoEm = LocalDateTime.now();
         this.atualizadoEm = LocalDateTime.now();
         if (this.slug == null || this.slug.isBlank()) {
@@ -132,8 +121,6 @@ public class Projeto {
         this.atualizadoEm = LocalDateTime.now();
     }
 
-    // soft delete
-
     public void softDelete() {
         this.deletedAt = LocalDateTime.now();
         this.status = StatusProjeto.ENCERRADO;
@@ -142,8 +129,6 @@ public class Projeto {
     public boolean isAtivo() {
         return this.deletedAt == null;
     }
-
-    // logica de negocio
 
     public boolean isMeta() {
         return this.valorCaptado.compareTo(this.metaValor) >= 0;
@@ -161,8 +146,6 @@ public class Projeto {
                 || this.status == StatusProjeto.ENCERRADO;
     }
 
-    // slug utilitario
-
     private String gerarSlug(String texto) {
         if (texto == null) return "";
         return texto.toLowerCase()
@@ -178,35 +161,20 @@ public class Projeto {
                 .replaceAll("-+", "-");
     }
 
-
     public String getId() { return id; }
-
     public String getTitulo() { return titulo; }
-
     public String getSlug() { return slug; }
-
     public String getDescricao() { return descricao; }
-
     public String getVideoUrl() { return videoUrl; }
-
     public String getCapaUrl() { return capaUrl; }
-
     public BigDecimal getMetaValor() { return metaValor; }
-
     public BigDecimal getValorCaptado() { return valorCaptado; }
-
     public Integer getQtdApoiadores() { return qtdApoiadores; }
-
     public LocalDate getDataFim() { return dataFim; }
-
     public TipoAssinatura getTipoAssinatura() { return tipoAssinatura; }
-
     public StatusProjeto getStatus() { return status; }
-
     public Usuario getCriador() { return criador; }
-
     public Categoria getCategoria() { return categoria; }
-
     public LocalDateTime getCriadoEm() { return criadoEm; }
     public LocalDateTime getAtualizadoEm() { return atualizadoEm; }
     public LocalDateTime getDeletedAt() { return deletedAt; }

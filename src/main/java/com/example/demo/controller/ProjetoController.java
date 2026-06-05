@@ -6,6 +6,7 @@ import com.example.demo.models.Dto.ProjetoUpdateDTO;
 import com.example.demo.models.Enums.StatusProjeto;
 import com.example.demo.models.Enums.TipoAssinatura;
 import com.example.demo.service.ProjetoService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,6 +28,7 @@ public class ProjetoController {
 
 
     @PostMapping
+    @Operation(summary = "Criar projeto")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ProjetoResponseDTO> criar(
             @Valid @RequestBody ProjetoRequestDTO dto,
@@ -38,6 +40,7 @@ public class ProjetoController {
     }
 
 
+    @Operation(summary = "Listar projetos")
     @GetMapping
     public ResponseEntity<Page<ProjetoResponseDTO>> listar(
             @RequestParam(required = false) String titulo,
@@ -51,18 +54,19 @@ public class ProjetoController {
         );
     }
 
-
+    @Operation(summary = "Buscar projeto por ID")
     @GetMapping("/{id}")
     public ResponseEntity<ProjetoResponseDTO> buscarPorId(@PathVariable String id) {
         return ResponseEntity.ok(projetoService.buscarPorId(id));
     }
 
-
+    @Operation(summary = "Buscar projeto por slug")
     @GetMapping("/slug/{slug}")
     public ResponseEntity<ProjetoResponseDTO> buscarPorSlug(@PathVariable String slug) {
         return ResponseEntity.ok(projetoService.buscarPorSlug(slug));
     }
 
+    @Operation(summary = "Listar projeto por criador")
     @GetMapping("/criador/{criadorId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<ProjetoResponseDTO>> listarPorCriador(
@@ -75,6 +79,7 @@ public class ProjetoController {
         );
     }
 
+    @Operation(summary = "Att projeto")
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ProjetoResponseDTO> atualizar(
@@ -90,6 +95,7 @@ public class ProjetoController {
         );
     }
 
+    @Operation(summary = "Att status do projeto")
     @PatchMapping("/{id}/status")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ProjetoResponseDTO> atualizarStatus(
@@ -105,6 +111,7 @@ public class ProjetoController {
         );
     }
 
+    @Operation(summary = "Deletar projeto")
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> deletar(

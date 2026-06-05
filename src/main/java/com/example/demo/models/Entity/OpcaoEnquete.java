@@ -6,9 +6,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -18,8 +18,7 @@ import java.time.LocalDateTime;
 public class OpcaoEnquete {
 
     @Id
-    @UuidGenerator
-    @Column(length = 36, nullable = false, updatable = false)
+    @Column(name = "id", columnDefinition = "char(36)", nullable = false, updatable = false)
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,6 +42,7 @@ public class OpcaoEnquete {
 
     @PrePersist
     void prePersist() {
+        if (this.id == null) this.id = UUID.randomUUID().toString();
         LocalDateTime now = LocalDateTime.now();
         this.criadoEm = now;
         this.atualizadoEm = now;
@@ -64,5 +64,4 @@ public class OpcaoEnquete {
     public void decrementarVoto() {
         if (this.qtdVotos > 0) this.qtdVotos--;
     }
-
 }

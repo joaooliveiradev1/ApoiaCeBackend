@@ -4,9 +4,9 @@ import com.example.demo.models.Enums.TipoNotificacao;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "notificacoes")
@@ -19,14 +19,13 @@ import java.time.LocalDateTime;
 public class Notificacao {
 
     @Id
-    @UuidGenerator
-    @Column(length = 36, nullable = false, updatable = false)
+    @Column(name = "id", columnDefinition = "char(36)", nullable = false, updatable = false)
     private String id;
 
-    @Column(name = "usuario_id", length = 36, nullable = false)
+    @Column(name = "usuario_id", columnDefinition = "char(36)", nullable = false, updatable = false)
     private String usuarioId;
 
-    @Column(name = "projeto_id", length = 36)
+    @Column(name = "projeto_id", columnDefinition = "char(36)")
     private String projetoId;
 
     @Column(length = 160, nullable = false)
@@ -53,6 +52,7 @@ public class Notificacao {
 
     @PrePersist
     protected void onCreate() {
+        if (this.id == null) this.id = UUID.randomUUID().toString();
         this.criadoEm = LocalDateTime.now();
         this.atualizadoEm = LocalDateTime.now();
         this.lida = false;

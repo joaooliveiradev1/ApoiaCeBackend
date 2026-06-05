@@ -4,11 +4,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -18,8 +18,7 @@ import java.util.List;
 public class Enquete {
 
     @Id
-    @UuidGenerator
-    @Column(length = 36, nullable = false, updatable = false)
+    @Column(name = "id", columnDefinition = "char(36)", nullable = false, updatable = false)
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -36,7 +35,7 @@ public class Enquete {
     private boolean ativa = true;
 
     @Column(name = "data_criacao", nullable = false)
-    private LocalDateTime dataCriacao; // data de início visível da enquete
+    private LocalDateTime dataCriacao;
 
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
@@ -52,6 +51,7 @@ public class Enquete {
 
     @PrePersist
     void prePersist() {
+        if (this.id == null) this.id = UUID.randomUUID().toString();
         LocalDateTime now = LocalDateTime.now();
         this.criadoEm = now;
         this.atualizadoEm = now;

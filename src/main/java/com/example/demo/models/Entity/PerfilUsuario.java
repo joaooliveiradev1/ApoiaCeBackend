@@ -6,15 +6,14 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-
 @Data
 @Entity
 @Table(name = "perfis_usuario")
 public class PerfilUsuario {
 
     @Id
-    @Column(name = "id", length = 36, nullable = false, updatable = false)
-    private String id = UUID.randomUUID().toString();
+    @Column(name = "id", columnDefinition = "char(36)", nullable = false, updatable = false)
+    private String id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)
@@ -40,7 +39,7 @@ public class PerfilUsuario {
 
     @PrePersist
     private void prePersist() {
-        this.id = UUID.randomUUID().toString();
+        if (this.id == null) this.id = UUID.randomUUID().toString();
         this.criadoEm = LocalDateTime.now();
         this.atualizadoEm = LocalDateTime.now();
     }
@@ -50,4 +49,3 @@ public class PerfilUsuario {
         this.atualizadoEm = LocalDateTime.now();
     }
 }
-

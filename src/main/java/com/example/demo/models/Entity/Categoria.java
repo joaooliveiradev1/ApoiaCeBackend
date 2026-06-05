@@ -19,8 +19,8 @@ import java.util.UUID;
 public class Categoria {
 
     @Id
-    @Column(length = 36)
-    private String id = UUID.randomUUID().toString();
+    @Column(name = "id", columnDefinition = "char(36)", nullable = false, updatable = false)
+    private String id;
 
     @NotBlank(message = "Nome é obrigatório")
     @Size(max = 80, message = "Nome deve ter no máximo 80 caracteres")
@@ -43,6 +43,7 @@ public class Categoria {
     @PrePersist
     public void prePersist() {
         var now = OffsetDateTime.now();
+        if (id == null) id = UUID.randomUUID().toString();
         if (criadoEm == null) criadoEm = now;
         if (atualizadoEm == null) atualizadoEm = now;
     }

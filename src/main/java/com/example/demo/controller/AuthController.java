@@ -41,22 +41,4 @@ public class AuthController {
         LoginResponseDTO response = authService.registro(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
-    @Operation(summary = "Solicitando token pra reset de senha")
-    @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(
-            @Valid @RequestBody ForgotPasswordRequestDTO dto) {
-
-        String token = authService.forgotPassword(dto);
-        return ResponseEntity.ok("Token gerado (dev): " + token);
-    }
-
-    @Operation(summary = "Resetando senha")
-    @PostMapping("/reset-password")
-    public ResponseEntity<Void> resetPassword(
-            @Valid @RequestBody ResetPasswordRequestDTO dto) {
-
-        authService.resetPassword(dto);
-        return ResponseEntity.noContent().build();
-    }
 }

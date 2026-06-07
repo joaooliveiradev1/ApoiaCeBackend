@@ -23,7 +23,7 @@ import com.example.demo.security.JwtFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity // ← adiciona essa linha
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
@@ -46,9 +46,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/graphql", "/graphiql"))
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // ← Correção do 403 (libera OPTIONS do Axios)
                         .requestMatchers(
                                 "/auth/**",
                                 "/auth/forgot-password",
@@ -91,8 +92,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/notificacoes/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/notificacoes/**").authenticated()
 
-
-                        // Projetos  ← ADICIONA AQUI
                         .requestMatchers(HttpMethod.GET,    "/projetos/**").permitAll()
                         .requestMatchers(HttpMethod.POST,   "/projetos/**").authenticated()
                         .requestMatchers(HttpMethod.PUT,    "/projetos/**").authenticated()

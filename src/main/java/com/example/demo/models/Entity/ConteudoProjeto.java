@@ -1,14 +1,27 @@
 package com.example.demo.models.Entity;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import org.hibernate.annotations.SQLRestriction;
+
 import com.example.demo.models.Enums.TipoConteudo;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Setter;
-import org.hibernate.annotations.SQLRestriction;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "conteudos_projeto")
@@ -16,7 +29,7 @@ import java.util.UUID;
 public class ConteudoProjeto {
 
     @Id
-    @Column(length = 36)
+    @Column(columnDefinition = "char(36)") // <-- Mudança aqui
     private String id = UUID.randomUUID().toString();
 
     @Setter

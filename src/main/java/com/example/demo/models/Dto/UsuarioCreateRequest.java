@@ -1,7 +1,9 @@
 package com.example.demo.models.Dto;
 
+import com.example.demo.models.Enums.UsuarioRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +23,9 @@ public class UsuarioCreateRequest {
     @NotBlank(message = "Senha é obrigatória")
     @Size(min = 8, message = "Senha deve ter no mínimo 8 caracteres")
     private String senha;
+
+    @NotNull(message = "Tipo de conta é obrigatório")
+    private UsuarioRole role;
 
     @Size(min = 11, max = 11, message = "CPF deve ter 11 dígitos")
     private String cpf;

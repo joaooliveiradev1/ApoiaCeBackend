@@ -6,7 +6,6 @@ import com.example.demo.models.Entity.Usuario;
 import com.example.demo.models.Enums.UsuarioRole;
 import com.example.demo.repository.PasswordResetTokenRepository;
 import com.example.demo.repository.UsuarioRepository;
-import com.example.demo.service.JwtService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -50,7 +48,8 @@ public class AuthService {
 
         String token = jwtService.gerarToken(usuario.getEmail(), Map.of(
                 "id", usuario.getId(),
-                "nome", usuario.getNome()
+                "nome", usuario.getNome(),
+                "role", usuario.getRole().name()
         ));
 
         LoginResponseDTO resp = new LoginResponseDTO();
@@ -67,11 +66,16 @@ public class AuthService {
             throw new IllegalArgumentException("Email já cadastrado");
         }
 
+        UsuarioRole role = dto.getRole();
+        if (role == null || role == UsuarioRole.ADMIN) {
+            role = UsuarioRole.APOIADOR;
+        }
+
         Usuario newUser = new Usuario();
         newUser.setNome(dto.getNome());
         newUser.setEmail(dto.getEmail());
         newUser.setSenhaHash(passwordEncoder.encode(dto.getSenha()));
-        newUser.setRole(UsuarioRole.CRIADOR);
+        newUser.setRole(role);
         newUser.setCpf(dto.getCpf());
         newUser.setDataNascimento(dto.getDataNascimento());
 
@@ -79,7 +83,8 @@ public class AuthService {
 
         String token = jwtService.gerarToken(saved.getEmail(), Map.of(
                 "id", saved.getId(),
-                "nome", saved.getNome()
+                "nome", saved.getNome(),
+                "role", saved.getRole().name()
         ));
 
         LoginResponseDTO resp = new LoginResponseDTO();
@@ -97,12 +102,10 @@ public class AuthService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
-        // Invalida tokens anteriores pendentes do mesmo usuário
         tokenRepository.deleteByUsuarioId(usuario.getId());
 
         String tokenValor = UUID.randomUUID().toString();
 
-        // Garante unicidade (colisão extremamente rara, mas defensável)
         while (tokenRepository.existsByToken(tokenValor)) {
             tokenValor = UUID.randomUUID().toString();
         }
@@ -114,8 +117,6 @@ public class AuthService {
 
         tokenRepository.save(token);
 
-        // Em produção: enviar por email
-        // Em dev: retornamos o token direto no response
         return tokenValor;
     }
 

@@ -4,9 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.util.UUID; // Import adicionado para corrigir o UUID.randomUUID()
 
 @Getter
 @Setter
@@ -21,14 +21,13 @@ import java.time.LocalDateTime;
 @SQLRestriction("deleted_at IS NULL")
 public class Voto {
 
+    @Id
+    @Column(name = "id", columnDefinition = "char(36)")
+    private String id = UUID.randomUUID().toString();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "enquete_id", nullable = false)
     private Enquete enquete;
-
-    @Id
-    @UuidGenerator
-    @Column(length = 36, nullable = false, updatable = false)
-    private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "opcao_id", nullable = false)

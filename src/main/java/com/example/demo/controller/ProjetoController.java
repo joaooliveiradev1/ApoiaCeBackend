@@ -39,20 +39,16 @@ public class ProjetoController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         try {
-            // 1. Verificação Estrita de Permissão (Garante que o Front receba o status 403)
             boolean temPermissao = userDetails.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_CRIADOR") || a.getAuthority().equals("ROLE_ADMIN"));
 
             if (!temPermissao) {
-                // Ao retornar o 403, o React ativará a mensagem: "Você não tem permissão para criar projetos."
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
 
-            // 2. Fluxo Normal de Criação
             ProjetoRequestDTO dto = objectMapper.readValue(projetoJson, ProjetoRequestDTO.class);
             String emailUser = userDetails.getUsername();
             ProjetoResponseDTO response = projetoService.criar(dto, imagem, emailUser);
-            
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
         } catch (Exception e) {
@@ -61,7 +57,6 @@ public class ProjetoController {
         }
     }
 
-    @Operation(summary = "Listar projetos")
     @GetMapping
     public ResponseEntity<Page<ProjetoResponseDTO>> listar(
             @RequestParam(required = false) String titulo,
@@ -75,19 +70,16 @@ public class ProjetoController {
         );
     }
 
-    @Operation(summary = "Buscar projeto por ID")
     @GetMapping("/{id}")
     public ResponseEntity<ProjetoResponseDTO> buscarPorId(@PathVariable String id) {
         return ResponseEntity.ok(projetoService.buscarPorId(id));
     }
 
-    @Operation(summary = "Buscar projeto por slug")
     @GetMapping("/slug/{slug}")
     public ResponseEntity<ProjetoResponseDTO> buscarPorSlug(@PathVariable String slug) {
         return ResponseEntity.ok(projetoService.buscarPorSlug(slug));
     }
 
-    @Operation(summary = "Listar projeto por criador")
     @GetMapping("/criador/{criadorId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<ProjetoResponseDTO>> listarPorCriador(
@@ -95,12 +87,9 @@ public class ProjetoController {
             @RequestParam(required = false) StatusProjeto status,
             @PageableDefault(size = 12, sort = "criadoEm") Pageable pageable
     ) {
-        return ResponseEntity.ok(
-                projetoService.listarPorCriador(criadorId, status, pageable)
-        );
+        return ResponseEntity.ok(projetoService.listarPorCriador(criadorId, status, pageable));
     }
 
-    @Operation(summary = "Att projeto")
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ProjetoResponseDTO> atualizar(
@@ -110,13 +99,9 @@ public class ProjetoController {
     ) {
         boolean isAdmin = userDetails.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-
-        return ResponseEntity.ok(
-                projetoService.atualizar(id, dto, userDetails.getUsername(), isAdmin)
-        );
+        return ResponseEntity.ok(projetoService.atualizar(id, dto, userDetails.getUsername(), isAdmin));
     }
 
-    @Operation(summary = "Att status do projeto")
     @PatchMapping("/{id}/status")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ProjetoResponseDTO> atualizarStatus(
@@ -126,13 +111,9 @@ public class ProjetoController {
     ) {
         boolean isAdmin = userDetails.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-
-        return ResponseEntity.ok(
-                projetoService.atualizarStatus(id, status, userDetails.getUsername(), isAdmin)
-        );
+        return ResponseEntity.ok(projetoService.atualizarStatus(id, status, userDetails.getUsername(), isAdmin));
     }
 
-    @Operation(summary = "Deletar projeto")
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> deletar(
@@ -141,7 +122,6 @@ public class ProjetoController {
     ) {
         boolean isAdmin = userDetails.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-
         projetoService.deletar(id, userDetails.getUsername(), isAdmin);
         return ResponseEntity.noContent().build();
     }

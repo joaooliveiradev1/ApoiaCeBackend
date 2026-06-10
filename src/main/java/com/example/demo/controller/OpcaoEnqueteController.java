@@ -3,7 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.models.Dto.EnqueteResponseDTO;
 import com.example.demo.models.Dto.OpcaoEnqueteRequestDTO;
 import com.example.demo.service.OpcaoEnqueteService;
-import io.swagger.v3.oas.annotations.Operation;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,6 @@ public class OpcaoEnqueteController {
 
     private final OpcaoEnqueteService opcaoEnqueteService;
 
-    @Operation(summary = "Add opcao para enquete")
     @PostMapping("/{enqueteId}/opcoes")
     public ResponseEntity<EnqueteResponseDTO> adicionarOpcao(
             @PathVariable @NotBlank String enqueteId,

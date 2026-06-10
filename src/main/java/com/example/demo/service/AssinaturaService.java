@@ -41,7 +41,6 @@ public class AssinaturaService {
         Usuario assinante = findUsuarioOrThrow(emailAssinante);
         Projeto projeto = findProjetoOrThrow(dto.getProjetoId());
 
-        validarAssinaturaDuplicada(assinante.getId(), projeto.getId());
         validarNaoAssinaProprioProject(assinante, projeto);
 
         Assinatura assinatura = new Assinatura();
@@ -107,15 +106,6 @@ public class AssinaturaService {
     }
 
     // validações
-
-    private void validarAssinaturaDuplicada(String assinanteId, String projetoId) {
-        boolean jaAssina = assinaturaRepository
-                .existsByAssinanteIdAndProjetoIdAndStatus(assinanteId, projetoId, AssinaturaStatus.ATIVA);
-        if (jaAssina) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Você já possui uma assinatura ativa neste projeto");
-        }
-    }
 
     private void validarNaoAssinaProprioProject(Usuario assinante, Projeto projeto) {
         if (projeto.getCriador().getId().equals(assinante.getId())) {

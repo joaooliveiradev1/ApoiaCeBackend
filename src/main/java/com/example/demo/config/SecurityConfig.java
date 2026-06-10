@@ -65,8 +65,12 @@ public class SecurityConfig {
                         .requestMatchers("/categorias/**").hasRole("ADMIN")
 
                         .requestMatchers("/pagamentos/**").authenticated()
-                        .requestMatchers( "/v3/api-docs",
-                                "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/perfil").authenticated()
                         .requestMatchers(HttpMethod.POST, "/perfil").authenticated()
@@ -104,7 +108,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();

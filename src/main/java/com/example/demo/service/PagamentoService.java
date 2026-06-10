@@ -72,22 +72,30 @@ public class PagamentoService {
 
     @Transactional
     public void processarWebhook(WebhookPayloadDTO payload) {
-        Pagamento pagamento = pagamentoRepository.findByGatewayTxId(payload.getTxId())
+        String txId = payload.getTxId();
+        String status = payload.getStatus();
+
+        if (txId == null || status == null) {
+            log.warn("Webhook inválido | event={} txId={} status={}", payload.getEvent(), txId, status);
+            throw new BusinessException("Webhook inválido: txId ou status ausente");
+        }
+
+        Pagamento pagamento = pagamentoRepository.findByGatewayTxId(txId)
                 .orElseThrow(() -> {
-                    log.warn("Webhook recebido para txId desconhecido: {}", payload.getTxId());
-                    return new BusinessException("Pagamento não encontrado para txId: " + payload.getTxId());
+                    log.warn("Webhook recebido para txId desconhecido: {}", txId);
+                    return new BusinessException("Pagamento não encontrado para txId: " + txId);
                 });
 
         if (!pagamento.isPendente()) {
-            log.warn("Webhook ignorado — pagamento já processado | txId={} status={}",
-                    payload.getTxId(), pagamento.getStatus());
+            log.warn("Webhook ignorado — pagamento já processado | txId={} statusAtual={}",
+                    txId, pagamento.getStatus());
             return;
         }
 
-        switch (payload.getStatus()) {
-            case "PAID"   -> confirmarPagamento(pagamento);  // era "CONFIRMED"
+        switch (status) {
+            case "PAID" -> confirmarPagamento(pagamento);
             case "FAILED" -> pagamento.falhar();
-            default -> log.warn("Status desconhecido recebido no webhook: {}", payload.getStatus());
+            default -> log.warn("Status desconhecido recebido no webhook: {}", status);
         }
 
         pagamentoRepository.save(pagamento);

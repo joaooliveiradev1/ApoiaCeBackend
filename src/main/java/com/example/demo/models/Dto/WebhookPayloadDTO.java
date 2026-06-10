@@ -7,21 +7,56 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class WebhookPayloadDTO {
 
-    private String event;  // "billing.paid"
+    private String event;
+    private Boolean devMode;
     private WebhookDataDTO data;
 
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class WebhookDataDTO {
-        private String id;      // esse é o txId — "pix_char_..."
-        private String status;  // "PAID"
+        private PaymentDTO payment;
+        private BillingDTO billing;
+        private PixQrCodeDTO pixQrCode;
+    }
+
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class PaymentDTO {
+        private String method;
+        private Integer fee;
+    }
+
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class BillingDTO {
+        private String id;
+        private String externalId;
+    }
+
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class PixQrCodeDTO {
+        private String id;
+        private String status;
+        private Integer amount;
+        private String kind;
     }
 
     public String getTxId() {
-        return data != null ? data.getId() : null;
+        return data != null && data.getPixQrCode() != null
+                ? data.getPixQrCode().getId()
+                : null;
     }
 
     public String getStatus() {
-        return data != null ? data.getStatus() : null;
+        return data != null && data.getPixQrCode() != null
+                ? data.getPixQrCode().getStatus()
+                : null;
+    }
+
+    public String getExternalId() {
+        return data != null && data.getBilling() != null
+                ? data.getBilling().getExternalId()
+                : null;
     }
 }

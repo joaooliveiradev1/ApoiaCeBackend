@@ -68,6 +68,28 @@ public class PagamentoService {
         return PagamentoResponseDTO.fromCobranca(pagamento, gateway);
     }
 
+    @Transactional
+    public void simularPagamento(String pagamentoId) {
+        Pagamento pagamento = pagamentoRepository.findById(pagamentoId)
+                .orElseThrow(() -> new BusinessException("Pagamento não encontrado"));
+
+        if (pagamento.getGatewayTxId() == null) {
+            throw new BusinessException("Este pagamento não possui txId do gateway");
+        }
+
+        if (!pagamento.isPendente()) {
+            throw new BusinessException("Este pagamento já foi processado!");
+        }
+
+        abacatePayClient.simularPagamento(pagamento.getGatewayTxId());
+
+        confirmarPagamento(pagamento);
+        pagamentoRepository.save(pagamento);
+
+        log.info("Simulação concluída e pagamento confirmado | pagamentoId={} txId={}",
+                pagamentoId, pagamento.getGatewayTxId());
+    }
+
     // Processar webhook
 
     @Transactional
@@ -131,24 +153,25 @@ public class PagamentoService {
     // Métodos privados
 
     private void confirmarPagamento(Pagamento pagamento) {
-    pagamento.confirmar();
+        pagamento.confirmar();
 
-    Assinatura assinatura = pagamento.getAssinatura();
-    assinatura.setProximaCobrancaEm(
-            assinatura.getProximaCobrancaEm().plusMonths(1));
-    assinaturaRepository.save(assinatura);
+        Assinatura assinatura = pagamento.getAssinatura();
 
-    // ← Atualiza o projeto
-    Projeto projeto = assinatura.getProjeto();
-    projeto.setValorCaptado(projeto.getValorCaptado().add(pagamento.getValorPago()));
-    projeto.setQtdApoiadores(projeto.getQtdApoiadores() + 1);
-    projetoRepository.save(projeto);
+        LocalDate base = assinatura.getProximaCobrancaEm() != null
+                ? assinatura.getProximaCobrancaEm()
+                : LocalDate.now();
 
-    log.info("Pagamento confirmado | id={} assinatura={} proximaCobranca={}",
-            pagamento.getId(),
-            assinatura.getId(),
-            assinatura.getProximaCobrancaEm());
-}
+        assinatura.setProximaCobrancaEm(base.plusMonths(1));
+        assinaturaRepository.save(assinatura);
+
+        Projeto projeto = assinatura.getProjeto();
+        projeto.setValorCaptado(projeto.getValorCaptado().add(pagamento.getValorPago()));
+        projeto.setQtdApoiadores(projeto.getQtdApoiadores() + 1);
+        projetoRepository.save(projeto);
+
+        log.info("Pagamento confirmado | id={} assinatura={} projeto={}",
+                pagamento.getId(), assinatura.getId(), projeto.getId());
+    }
 
     private void validarAssinaturaAtiva(Assinatura assinatura) {
         if (assinatura.getCanceladaEm() != null) {

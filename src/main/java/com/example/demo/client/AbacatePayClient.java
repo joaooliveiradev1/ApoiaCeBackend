@@ -68,6 +68,25 @@ public class AbacatePayClient {
         }
     }
 
+
+    public void simularPagamento(String txId) {
+        String url = baseUrl + "/pixQrCode/simulate-payment?id=" + txId;
+
+        try {
+            restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    new HttpEntity<>(Map.of(), buildHeaders()),
+                    Void.class
+            );
+            log.info("Pagamento simulado com sucesso na AbacatePay | txId={}", txId);
+        } catch (HttpClientErrorException e) {
+            log.error("Erro ao simular pagamento | status={} body={}",
+                    e.getStatusCode(), e.getResponseBodyAsString());
+            throw new RuntimeException("Falha ao simular pagamento: " + e.getStatusCode());
+        }
+    }
+
     // headers
 
     private HttpHeaders buildHeaders() {

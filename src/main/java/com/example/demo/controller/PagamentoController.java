@@ -30,6 +30,13 @@ public class PagamentoController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/{id}/simular")
+    @PreAuthorize("hasAnyRole('APOIADOR', 'CRIADOR', 'ADMIN')")
+    public ResponseEntity<Void> simularPagamento(@PathVariable String id) {
+        pagamentoService.simularPagamento(id);
+        return ResponseEntity.ok().build();
+    }
+
     // Histórico de pagamentos de uma assinatura
 
     @GetMapping("/assinatura/{assinaturaId}")
